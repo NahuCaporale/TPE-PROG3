@@ -51,7 +51,7 @@ public class utils {
             paquete.setId(Integer.parseInt(row.getFirst()));
             paquete.setCodigo(row.get(1));
             paquete.setPeso(Integer.parseInt(row.get(2)));//si viene 1 es true osea refrigerado, sino es 0 osea falso que es refirgerado
-            paquete.setContiene_alimento(row.get(3).equals("1"));
+            paquete.setContieneAlimento(row.get(3).equals("1"));
             paquete.setUrgencia(Integer.parseInt(row.get(4)));
             paquetes.add(paquete);
         }

@@ -2,15 +2,15 @@ public class Paquete {
     int id;
     String codigo;
     int peso;
-    boolean contiene_alimento;
+    boolean contieneAlimento;
     int urgencia;
 
 
-    public Paquete(int id, String codigo, int peso, boolean contiene_alimento, int urgencia) {
+    public Paquete(int id, String codigo, int peso, boolean contieneAlimento, int urgencia) {
         this.id = id;
         this.codigo = codigo;
         this.peso = peso;
-        this.contiene_alimento = contiene_alimento;
+        this.contieneAlimento = contieneAlimento;
         this.urgencia = urgencia;
     }
 
@@ -41,12 +41,12 @@ public class Paquete {
         this.peso = peso;
     }
 
-    public boolean isContiene_alimento() {
-        return contiene_alimento;
+    public boolean contieneAlimento() {
+        return contieneAlimento;
     }
 
-    public void setContiene_alimento(boolean contiene_alimento) {
-        this.contiene_alimento = contiene_alimento;
+    public void setContieneAlimento(boolean contiene_alimento) {
+        this.contieneAlimento = contiene_alimento;
     }
 
     public int getUrgencia() {
@@ -63,7 +63,7 @@ public class Paquete {
                 "id=" + id +
                 ", codigo='" + codigo + '\'' +
                 ", peso=" + peso +
-                ", contiene_alimento=" + contiene_alimento +
+                ", contiene_alimento=" + contieneAlimento +
                 ", urgencia=" + urgencia +
                 '}';
     }

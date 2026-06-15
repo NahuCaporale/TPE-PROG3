@@ -45,7 +45,7 @@ public class Servicios {
                 paqueteList.add(p);
                 this.paquetesByUrgencia.put(p.getUrgencia(), paqueteList);
             }
-            if (p.contiene_alimento) conAlimento.add(p);
+            if (p.contieneAlimento) conAlimento.add(p);
             else {
                 sinAlimento.add(p);
             }
@@ -101,10 +101,7 @@ public class Servicios {
         return paquetes;
     }
 
-    public Solucion backtracking() {
-        Backtracking b = new Backtracking();
-        return b.getSolucion(camiones,paquetes);
-    }
+
 
     public int getCamionesTotales() {
         return camionesTotales;

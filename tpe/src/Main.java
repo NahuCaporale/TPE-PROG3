@@ -16,6 +16,10 @@ public class Main {
         Backtracking bt = new Backtracking();
         Solucion sol = bt.getSolucion(s.getCamiones(), s.getPaquetes());
         System.out.println(sol);
+
+        Greedy g = new Greedy();
+        Solucion gSol = g.getSolucionGreedy(s.getCamiones(), s.getPaquetes());
+        System.out.println(gSol);
     }
 
 
