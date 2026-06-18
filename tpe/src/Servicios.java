@@ -13,7 +13,7 @@ public class Servicios {
     private final List<Paquete> conAlimento;
     private final List<Paquete> sinAlimento;
     //servicio 3
-    private HashMap<Integer, List<Paquete>> paquetesByUrgencia;
+    private List<Paquete>[] urgencias;
 
     /*
      * o(n) donde n es la cantidad de elementos que contienen los archivos .csv
@@ -23,7 +23,7 @@ public class Servicios {
         this.paqueteMap = new HashMap<>();
         this.conAlimento = new ArrayList<>();
         this.sinAlimento = new ArrayList<>();
-        this.paquetesByUrgencia = new HashMap<>();
+        this.urgencias = new ArrayList[101];
         //CAMIONES si no funciona con este path poner absoluth,
         // o agregar $MODULE_WORKING_DIR$ en el working directory dentro de la config del run
         List<List<String>> listaCamion = utils.reader(pathCamiones);
@@ -36,20 +36,19 @@ public class Servicios {
         List<List<String>> paquetesRaw = utils.reader(pathPaquetes);
         this.paquetesTotales = utils.getTotal(paquetesRaw);
         this.paquetes = utils.getPaquetes(paquetesRaw);
+        for (int i = 0; i < 101; i++) {
+            this.urgencias[i] = new ArrayList<>();
+        }
         for (Paquete p : paquetes) {
-            paqueteMap.put(p.getCodigo(), p);
-            if (this.paquetesByUrgencia.containsKey(p.getUrgencia())) {
-                this.paquetesByUrgencia.get(p.getUrgencia()).add(p);
-            } else {
-                List<Paquete> paqueteList = new ArrayList<>();
-                paqueteList.add(p);
-                this.paquetesByUrgencia.put(p.getUrgencia(), paqueteList);
-            }
+            paqueteMap.put(p.getCodigo().toUpperCase(), p);
             if (p.contieneAlimento) conAlimento.add(p);
             else {
                 sinAlimento.add(p);
             }
+            this.urgencias[p.getUrgencia()].add(p);
+
         }
+
     }
 
 
@@ -67,11 +66,9 @@ public class Servicios {
 
     /*
      * Expresar la complejidad temporal del servicio 2.
-     * o(1) ya que al utilizar un hashmap y tener dividos entre los que contienen o no alimentos,
-     * nos evitamos el tener que iterar sobre las listas y que la complejidad se dispare a o(n) donde n sea la cantidad de paquetes
-     * Dado un booleano que indica si se buscan paquetes que
-    contienen alimentos (true) o que no contienen alimentos (false), retornar el
-    listado de paquetes correspondiente.
+     * o(m) donde m es la cantidad de elementos de la lista que necesitamos retornar
+     * nos evitamos el tener que iterar sobre las listas.
+     *
 
      */
     public List<Paquete> servicio2(boolean contieneAlimentos) {
@@ -79,28 +76,25 @@ public class Servicios {
     }
 
     /*
-     * Expresar la complejidad temporal del servicio 3.
-     * o(r + p) donde r es la cantidad a recorrer del rango especificado y p cantidad de paquetes encontrados en ese rango.
-     * si el nivel de urgencia fuera mas amplio es decir mas alto que el 100 que tenemos como maximo, deberiamos usar un
-     * arbol binario para guardar los datos, pero como es un rango acotado no nos conviene. porque si bien la complejidad que tenemos ahora
-     * o(r + p) es un poco mas amplia. en el caso optimo podria ser o(p) dependiendo el nivel de urgencia que nos venga.
-     * Dados dos valores enteros que representan un nivel de urgencia
-    mínimo y máximo, retornar todos los paquetes cuyo nivel de urgencia se
-    encuentre dentro de ese rango (inclusive).
+     * Complejidad temporal del servicio 3: O(K)
+     * Donde K es la cantidad total de paquetes que caen dentro del rango solicitado.
+     * Justificación: Como la urgencia está acotada entre 1 y 100, iterar el rango de índices
+     * toma un máximo de 100 operaciones (O(1)). El tiempo lo determina únicamente la acción
+     * de agregar los elementos encontrados a la lista de resultado (O(K)).
      */
-    public List<Paquete> servicio3(int urgenciaMinima, int
-            urgenciaMaxima) {
-        List<Paquete> paquetes = new ArrayList<>();
-        if (urgenciaMinima <= 0 || urgenciaMaxima <= 0 || urgenciaMaxima > 100 || urgenciaMinima > urgenciaMaxima)
-            return null;
-        for (int i = urgenciaMinima; i <= urgenciaMaxima; i++) {
-            if (this.paquetesByUrgencia.containsKey(i)) {
-                paquetes.addAll(this.paquetesByUrgencia.get(i));
-            }
-        }
-        return paquetes;
-    }
+    public List<Paquete> servicio3(int urgenciaMinima, int urgenciaMaxima) {
+        List<Paquete> resultado = new ArrayList<>();
 
+        // para no pasarnos del limite del arreglo
+        int min = Math.max(1, urgenciaMinima);
+        int max = Math.min(100, urgenciaMaxima);
+
+        for (int i = min; i <= max; i++) {
+            resultado.addAll(this.urgencias[i]);
+        }
+
+        return resultado;
+    }
 
 
     public int getCamionesTotales() {

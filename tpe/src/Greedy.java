@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Greedy {
-    HashMap<Camion, List<Paquete>> s;
+
     /*
 
      * Estrategia greedy:
@@ -16,61 +16,53 @@ public class Greedy {
       la complejidad del mejor caso que seria o(p log p)
 
      * */
-
-    public Solucion getSolucionGreedy(List<Camion> camiones, List<Paquete> paquetes) {
-        List<Paquete> pAlimentos = paquetes.stream().filter(p -> p.contieneAlimento()).collect(Collectors.toList());
-
+    public Solucion getSolucionGreedy(List<Camion> camionesBase, List<Paquete> paquetes) {
+        List<Paquete> pAlimentos = paquetes.stream()
+                .filter(Paquete::contieneAlimento)
+                .collect(Collectors.toList());
         pAlimentos.sort((p1, p2) -> p2.getPeso() - p1.getPeso());
-        List<Paquete> pNoAlimentos = paquetes.stream().filter(p -> !p.contieneAlimento()).collect(Collectors.toList());
+
+        List<Paquete> pNoAlimentos = paquetes.stream()
+                .filter(p -> !p.contieneAlimento())
+                .collect(Collectors.toList());
         pNoAlimentos.sort((p1, p2) -> p2.getPeso() - p1.getPeso());
-        camiones.sort((c1, c2) -> Boolean.compare(c2.isRefrigerado(), c1.isRefrigerado()));
-        s = new HashMap<Camion, List<Paquete>>();
 
-        for (Camion c : camiones) {
-            s.put(c, new ArrayList<>());
+        List<Camion> camiones = new ArrayList<>();
+        //para no alterar/ensuciar la lista si hay que volver a ejecutar el algoritmo.
+        for (Camion c : camionesBase) {
+            camiones.add(new Camion(c.getId(), c.getPatente(), c.isRefrigerado(), c.getCapacidad()));
         }
+        camiones.sort((c1, c2) -> Boolean.compare(c2.isRefrigerado(), c1.isRefrigerado()));
 
-        int candidatos = 0;
+        int candidatosConsiderados = 0;
         int pesoNoAsignado = 0;
 
         for (Paquete paquete : pAlimentos) {
             boolean asignado = false;
-
             for (Camion c : camiones) {
-
-                candidatos++;
-                if (c.isRefrigerado()) {
-                    if (paquete.getPeso() + c.totalAsignado <= c.getCapacidad()) {
-                        s.get(c).add(paquete);
-                        c.addTotal(paquete.getPeso());
-                        c.addPaquete(paquete);
-                        asignado = true;
-                        break;
-                    }
-                }
-            }
-            if (!asignado) pesoNoAsignado += paquete.getPeso();
-
-        }
-        for (Paquete paquete : pNoAlimentos) {
-            boolean asignado = false;
-            for (Camion c : camiones) {
-                candidatos++;
-                if (paquete.getPeso() + c.totalAsignado <= c.getCapacidad()) {
-                    s.get(c).add(paquete);
-                    c.addTotal(paquete.getPeso());
+                candidatosConsiderados++;
+                if (c.puedeLlevar(paquete)) {
                     c.addPaquete(paquete);
-                    asignado= true;
+                    asignado = true;
                     break;
                 }
             }
             if (!asignado) pesoNoAsignado += paquete.getPeso();
         }
 
-        Solucion solucion = new Solucion(s, pesoNoAsignado, 0, candidatos);
+        for (Paquete paquete : pNoAlimentos) {
+            boolean asignado = false;
+            for (Camion c : camiones) {
+                candidatosConsiderados++;
+                if (c.puedeLlevar(paquete)) {
+                    c.addPaquete(paquete);
+                    asignado = true;
+                    break;
+                }
+            }
+            if (!asignado) pesoNoAsignado += paquete.getPeso();
+        }
 
-        return solucion;
+        return new Solucion(camiones, pesoNoAsignado, 0, candidatosConsiderados);
     }
-
 }
-

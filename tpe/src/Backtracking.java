@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Backtracking {
-    Map<Camion, List<Paquete>> solucionParcial;
-    Solucion s;
+    Solucion mejorSolucion;
     int parcialNoAsignado;
+    int estadosGenerados;
+    int mejorPesoNoAsignado;
 
     public Backtracking() {
     }
@@ -26,13 +27,18 @@ public class Backtracking {
      * */
     public Solucion getSolucion(List<Camion> camiones, List<Paquete> paquetes) {
         if (camiones.isEmpty() || paquetes.isEmpty()) return null;
-        s = new Solucion();
-        solucionParcial = new HashMap<>();
+        this.parcialNoAsignado = 0;
+        this.estadosGenerados = 0;
+        this.mejorPesoNoAsignado = Integer.MAX_VALUE;
+        this.mejorSolucion = new Solucion();
+
+        List<Camion> estadoCamiones = new ArrayList<>();
         for (Camion c : camiones) {
-            solucionParcial.put(c, new ArrayList<>());
+            estadoCamiones.add(new Camion(c.getId(), c.getPatente(), c.isRefrigerado(), c.getCapacidad()));
         }
         backtrack(camiones, paquetes, 0);
-        return s;
+        this.mejorSolucion.setEstadosGenerados(this.estadosGenerados);
+        return this.mejorSolucion;
     }
 
     //Backtracking
@@ -44,51 +50,38 @@ public class Backtracking {
     //Peso no asignado: <peso total de paquetes sin asignar> kg.
     //Métrica para analizar el costo de la solución (cantidad de
     //estados generados).
-    public void backtrack(List<Camion> camiones, List<Paquete> paquetes, int iPaquete) {
-        s.estadosGenerados++;
-        if (parcialNoAsignado >= s.getPesoNoAsignado()) return;
-        if (paquetes.size() <= iPaquete) {
-            if (s.getPesoNoAsignado() > parcialNoAsignado) {
-                if (s.getSolucion() != null) s.getSolucion().clear();
-                HashMap<Camion, List<Paquete>> copia = new HashMap<>();
-                for (Map.Entry<Camion, List<Paquete>> camActual : solucionParcial.entrySet()) {
-                    //genero una entrada nueva en copia con los datos del camion actual del map.
-                    //si asignaba directamente la solucionparcial de la clase no se guardaban los elementos
-                    //ya que estaba referenciando a una solucion que se limpia cada vez que termina el algoritmo.
-                    copia.put(camActual.getKey(), new ArrayList<>(camActual.getValue()));
+    private void backtrack(List<Camion> camiones, List<Paquete> paquetes, int iPaquete) {
+        this.estadosGenerados++;
 
+        if (this.parcialNoAsignado >= this.mejorPesoNoAsignado) return;
+
+        if (iPaquete >= paquetes.size()) {
+            if (this.parcialNoAsignado < this.mejorPesoNoAsignado) {
+                this.mejorPesoNoAsignado = this.parcialNoAsignado;
+
+                List<Camion> copiaCamiones = new ArrayList<>();
+                for (Camion c : camiones) {
+                    copiaCamiones.add(c.clonarEstado());
                 }
-                s.setSolucion(copia);
-                s.setPesoNoAsignado(parcialNoAsignado);
 
+                this.mejorSolucion.setCamiones(copiaCamiones);
+                this.mejorSolucion.setPesoNoAsignado(this.mejorPesoNoAsignado);
             }
             return;
         }
 
-
         Paquete paquete = paquetes.get(iPaquete);
-        for (int i = 0; i <= camiones.size() - 1; i++) {
-            Camion c = camiones.get(i);
-            if (sePuedeAsignar(c, paquete)) {
-                solucionParcial.get(c).add(paquete);
-                c.addTotal(paquete.getPeso());
+
+        for (Camion c : camiones) {
+            if (c.puedeLlevar(paquete)) {
+                c.addPaquete(paquete);
                 backtrack(camiones, paquetes, iPaquete + 1);
-                solucionParcial.get(c).remove(paquete);
-                c.restarPeso(paquete.getPeso());
+                c.removePaquete(paquete);
             }
         }
 
-        parcialNoAsignado += paquete.getPeso();//no se pudo asignar el paquete, exploramos la opcion. +1 en complejidad.
+        this.parcialNoAsignado += paquete.getPeso();
         backtrack(camiones, paquetes, iPaquete + 1);
-        parcialNoAsignado -= paquete.getPeso();
-
+        this.parcialNoAsignado -= paquete.getPeso();
     }
-
-    public boolean sePuedeAsignar(Camion c, Paquete paquete) {
-        if (paquete.contieneAlimento() && !c.isRefrigerado())
-            return false;//solo si contiene alimentos y no es refrigerado es false.
-        if (c.getTotalAsignados() + paquete.getPeso() > c.getCapacidad()) return false;
-        return true;
-    }
-
 }
