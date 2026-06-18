@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Backtracking {
     Solucion mejorSolucion;
@@ -13,17 +11,16 @@ public class Backtracking {
     }
 
     /*
-     * El objetivo es minimizar la cantidad del peso noAsignado explorando todas las combinaciones posibles.
-     * Utilizamos un hashmap para la solucion porque en terminos de acceso se hacia mas efectivo que tener
-     * por ejemplo una lista de paquetes dentro de la clase camion. el map nos baja la complejidad de acceder a los paquetes de cada camion.
-     * tambien como el enunciado nos decia que podria no asignarse un paquete tuvimos que hacer su propia rama de backtrack para explorar esa
-     * opcion.
+     * El objetivo es minimizar la cantidad del pesonoAsignado explorando todas las combinaciones posibles.
+       para avanzar en el recorrido vamos modificando la misma solucion que devolvemos al final y ademas
+       se modifica la lista interna de paquetes de cada camion, asi no tenemos que usar estructuras adicionales.
+       solo se clona el estado al encontrar una solución mejor que la que teniamos guardada.
      *
-     * es una solucion con complejidad computacional de O((C+1)^p) en el peor caso, donde c es la cantidad de camiones que tenemos para recorrer,
-     * y p la cantidad de paquetes a asignar, el +1 represnta la rama donde ese paquete no sa asigna.
+     * es una solucion con complejidad computacional de O((C+1)^p) en el peor caso, donde c es la cantidad de camiones
+     * que tenemos para recorrer, y p la cantidad de paquetes a asignar, el +1 represnta la rama donde ese paquete no sa asigna.
      *
-     * Poda:la unica poda que hay es si nos pasamos del mejor pesoNoAsignado que ya tenemos registrado.
-     * nos sirve para reducir lacantidad de estados generados.
+     * Poda: si nos pasamos o igualamos el mejor pesoNoAsignado que ya tenemos registrado cortamos la rama.
+     * nos sirve para reducir la cantidad de estados generados.
      * */
     public Solucion getSolucion(List<Camion> camiones, List<Paquete> paquetes) {
         if (camiones.isEmpty() || paquetes.isEmpty()) return null;

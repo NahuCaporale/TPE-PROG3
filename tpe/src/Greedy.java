@@ -8,12 +8,13 @@ public class Greedy {
     /*
 
      * Estrategia greedy:
-     Dividimos la unica lista que nos viene de paquetes en dos,con alimentos y sin, donde podemos justamente ser mas eficiente a la hora de
+     Dividimos la unica lista que nos viene de paquetes en dos, con alimentos y sin,
+     donde podemos justamente ser mas eficiente a la hora de
      asignar los que tienen alimentos. a su vez esas dos listas las ordenamos por peso descendente.
-      tambien ordenamos la lista de camiones por peso y ponemos primero
+     tambien ordenamos la lista de camiones por peso y ponemos primero
      los que son refrigerados para que la primera iteracion de los alimentos sea mucho mas eficiente.
-      peor caso: o(p^2) donde p es la cantidad de paquetes. si c es del mismo orden que p, esto equivale a O(p^2) y queda predominante sobre
-      la complejidad del mejor caso que seria o(p log p)
+     peor caso: o(p^2) donde p es la cantidad de paquetes. si c es del mismo orden que p,
+     esto equivale a O(p^2) y queda predominante sobre la complejidad del mejor caso que seria o(p log p)
 
      * */
     public Solucion getSolucionGreedy(List<Camion> camionesBase, List<Paquete> paquetes) {

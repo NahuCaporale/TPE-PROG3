@@ -24,6 +24,7 @@ public class Servicios {
         this.conAlimento = new ArrayList<>();
         this.sinAlimento = new ArrayList<>();
         this.urgencias = new ArrayList[101];
+
         //CAMIONES si no funciona con este path poner absoluth,
         // o agregar $MODULE_WORKING_DIR$ en el working directory dentro de la config del run
         List<List<String>> listaCamion = utils.reader(pathCamiones);
@@ -77,8 +78,8 @@ public class Servicios {
 
     /*
      * Complejidad temporal del servicio 3: O(K)
-     * Donde K es la cantidad total de paquetes que caen dentro del rango solicitado.
-     * Justificación: Como la urgencia está acotada entre 1 y 100, iterar el rango de índices
+     * donde K es la cantidad total de paquetes que caen dentro del rango solicitado.
+     * como la urgencia está acotada entre 1 y 100, iterar el rango de índices
      * toma un máximo de 100 operaciones (O(1)). El tiempo lo determina únicamente la acción
      * de agregar los elementos encontrados a la lista de resultado (O(K)).
      */
